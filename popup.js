@@ -1,9 +1,5 @@
 function parseFormattedDate(dateStr) {
-	//	const dateStr = document.querySelector("span.pz-game-date")?.textContent.trim() ? parseFormattedDate(dateStr) : null;
-
 	const date = new Date(dateStr);
-
-	console.log("Date:", date, dateStr);
 
 	const mm = String(date.getMonth() + 1).padStart(2, '0');
 	const dd = String(date.getDate()).padStart(2, '0');
@@ -12,9 +8,6 @@ function parseFormattedDate(dateStr) {
 }
 
 function renderPrefixProgress(hints, enteredWords, container) {
-	//	const container = document.getElementById("prefixes");
-	//	container.innerHTML = "";
-
 	const twoLetter = document.createElement("div");
 	twoLetter.innerHTML = "<h3>Two Letter List</h3>";
 
@@ -207,8 +200,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 	const puzzDate = parseFormattedDate(rawDate);
 
-	console.log("puzz date:", puzzDate);
-
 	const { sb_hints } = await getStorage("sb_hints");
 
 	if (!sb_hints || !sb_hints[puzzDate]) {
@@ -220,13 +211,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 		const linkToHints = document.createElement("a");
 
 		linkToHints.className = "linktoplay";
-
 		linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
-
 		linkToHints.innerText = "Get Official Hints!"
-
 		linkToHints.target = "_blank";
-
 		status.innerHTML = "";
 
 		container.appendChild(linkToHints);
