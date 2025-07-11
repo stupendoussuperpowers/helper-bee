@@ -1,15 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Helper Bee",
-  "version": "1.0",
+  "version": "0.1.0",
   "description": "Track your NYT Spelling Bee progress using daily hints.",
   "permissions": [
     "storage",
     "scripting",
     "activeTab"
-  ],
-  "host_permissions": [
-    "https://www.nytimes.com/*"
   ],
   "action": {
 	"default_popup": "popup.html", 
@@ -25,4 +22,3 @@
     }
   ]
 }
-
