@@ -37,7 +37,7 @@ function renderPrefixProgress(hints, enteredWords, container) {
 		const lineDiv = document.createElement("div");
 
 		const lineText = groups[firstLetter]
-			.map(({ prefix, matched, count }) => `<span style="font-weight: 500;">${prefix}</span> <span class= ${matched.trim() == count.trim() ? 'done count' : 'count'}> ${matched}/${count}</span>`)
+			.map(({ prefix, matched, count }) => `<span style="font-family: monospace; font-weight: bold;">${prefix + ' '}</span> <span class= ${matched.trim() == count.trim() ? 'done count' : 'count'}> ${matched}/${count}</span>`)
 			.join("  "); // two spaces for separation
 
 		lineDiv.innerHTML = lineText;
@@ -189,6 +189,10 @@ function executeScript(tabId, func) {
 	}).then(results => results?.[0]?.result);
 }
 
+function getStorage(key) {
+	return new Promise(resolve => chrome.storage.local.get(key, resolve));
+}
+
 chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 	const tab = tabs[0];
 	if ((!tab || !tab.url.includes("spelling-bee")) || tab.url.includes("spelling-bee-forum")) {
@@ -205,47 +209,42 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 	console.log("puzz date:", puzzDate);
 
-	chrome.storage.local.get("sb_hints", ({ sb_hints }) => {
-		if (!sb_hints || !sb_hints[puzzDate]) {
-			const status = document.getElementById("status");
-			const container = document.getElementById("prefixes");
+	const { sb_hints } = await getStorage("sb_hints");
 
-			container.innerHTML = "";
+	if (!sb_hints || !sb_hints[puzzDate]) {
+		const status = document.getElementById("status");
+		const container = document.getElementById("prefixes");
 
-			const linkToHints = document.createElement("a");
+		container.innerHTML = "";
 
-			linkToHints.className = "linktoplay";
+		const linkToHints = document.createElement("a");
 
-			linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
+		linkToHints.className = "linktoplay";
 
-			linkToHints.innerText = "Get Official Hints!"
+		linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
 
-			linkToHints.target = "_blank";
+		linkToHints.innerText = "Get Official Hints!"
 
-			status.innerHTML = "";
+		linkToHints.target = "_blank";
 
-			container.appendChild(linkToHints);
+		status.innerHTML = "";
 
-			return;
-		}
+		container.appendChild(linkToHints);
 
-		chrome.scripting.executeScript({
-			target: { tabId: tab.id },
-			func: () => {
-				return Array.from(document.querySelectorAll("ul.sb-wordlist-items-pag li"))
-					.map(el => el.textContent.trim().toLowerCase())
-					.filter(Boolean);
-			}
-		}, results => {
-			console.log({ results });
-			if (chrome.runtime.lastError || !results || !results[0]) {
+		return;
+	}
 
-				callback(sb_hints[puzzDate], [], null);
-			} else {
-				callback(sb_hints[puzzDate], results[0].result, puzzDate);
-			}
-		});
-
+	const enteredWords = await executeScript(tab.id, () => {
+		return Array.from(document.querySelectorAll("ul.sb-wordlist-items-pag li"))
+			.map(el => el.textContent.trim().toLowerCase())
+			.filter(Boolean);
 	});
+
+	console.log({ enteredWords });
+	if (chrome.runtime.lastError || !enteredWords) {
+		callback(sb_hints[puzzDate], [], null);
+	} else {
+		callback(sb_hints[puzzDate], enteredWords, puzzDate);
+	}
 });
 
