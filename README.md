@@ -1,6 +1,8 @@
 ## 🐝 Helper Bee
 
-An NYT Spelling Bee progress tracker based on the official hints provided by the game. 
+An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hints provided by the game. 
+
+![Chrome Extension UI](ui.png)
 
 ### How to use
 - Install and open the extension.
