@@ -14,8 +14,4 @@ An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hi
 - Open the extension popup to view your progress:
    - ✅ Two-letter prefix clue tracking
    - ✅ Matrix of found words by length and starting letter
-
-### TODO
-
-- Ensure only today's hints are stored
-- Add support for archived/previous puzzles
+- Added support for archived/previous puzzles

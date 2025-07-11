@@ -53,6 +53,14 @@ function parseMatrix() {
 	};
 }
 
+function getDateFromHintsURL(url) {
+	const match = url.match(/nytimes\.com\/(\d{4})\/(\d{2})\/(\d{2})\//);
+	if (!match) return null;
+
+	const [, year, month, day] = match;
+	return `${year}/${month}/${day}`;
+}
+
 function saveHintData() {
 	console.log("[start] hint parsing...");
 	const prefixes = parsePrefixClues();
@@ -60,14 +68,20 @@ function saveHintData() {
 	console.log({ matrixResults });
 	const timestamp = new Date().toISOString();
 
-	chrome.storage.local.set({
-		sb_hints: {
+	const todaysDate = getDateFromHintsURL(window.location.href);
+
+	chrome.storage.local.get("sb_hints", data => {
+		const allHints = data?.sb_hints || {};
+		allHints[todaysDate] = {
 			prefixes,
 			matrix: matrixResults.matrix,
 			matrixLength: matrixResults.wordLengths,
 			timestamp
-		}
-	}, () => console.log("Spelling Bee hint data saved!"));
+		};
+
+		chrome.storage.local.set({ sb_hints: allHints });
+	});
+
 }
 
 saveHintData();

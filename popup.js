@@ -1,3 +1,16 @@
+function parseFormattedDate(dateStr) {
+	//	const dateStr = document.querySelector("span.pz-game-date")?.textContent.trim() ? parseFormattedDate(dateStr) : null;
+
+	const date = new Date(dateStr);
+
+	console.log("Date:", date, dateStr);
+
+	const mm = String(date.getMonth() + 1).padStart(2, '0');
+	const dd = String(date.getDate()).padStart(2, '0');
+	const yyyy = date.getFullYear();
+	return `${yyyy}/${mm}/${dd}`;
+}
+
 function renderPrefixProgress(hints, enteredWords, container) {
 	//	const container = document.getElementById("prefixes");
 	//	container.innerHTML = "";
@@ -167,16 +180,31 @@ function callback(hints, enteredWords) {
 	}
 }
 
-//function getEnteredWordsInGameTab(callback) {
-chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+function executeScript(tabId, func) {
+	return chrome.scripting.executeScript({
+		target: { tabId },
+		func
+	}).then(results => results?.[0]?.result);
+}
+
+chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 	const tab = tabs[0];
-	if (!tab || !tab.url.includes("spelling-bee")) {
+	if ((!tab || !tab.url.includes("spelling-bee")) || tab.url.includes("spelling-bee-forum")) {
 		callback(null);
 		return;
 	}
 
+	const rawDate = await executeScript(tab.id, () => {
+		const el = document.querySelector("span.pz-game-date");
+		return el ? el.textContent.trim() : null;
+	})
+
+	const puzzDate = parseFormattedDate(rawDate);
+
+	console.log("puzz date:", puzzDate);
+
 	chrome.storage.local.get("sb_hints", ({ sb_hints }) => {
-		if (!sb_hints) {
+		if (!sb_hints || !sb_hints[puzzDate]) {
 			const status = document.getElementById("status");
 			const container = document.getElementById("prefixes");
 
@@ -186,7 +214,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 
 			linkToHints.className = "linktoplay";
 
-			linkToHints.href = `https://www.nytimes.com/${new Date().toISOString().slice(0, 10).replace(/-/g, "/")}/crosswords/spelling-bee-forum.html`;
+			linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
 
 			linkToHints.innerText = "Get the official hints!"
 
@@ -209,9 +237,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 		}, results => {
 			console.log({ results });
 			if (chrome.runtime.lastError || !results || !results[0]) {
-				callback(sb_hints, []);
+				callback(sb_hints[puzzDate], []);
 			} else {
-				callback(sb_hints, results[0].result);
+				callback(sb_hints[puzzDate], results[0].result);
 			}
 		});
 
