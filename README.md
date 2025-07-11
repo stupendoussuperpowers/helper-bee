@@ -14,4 +14,6 @@ An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hi
    - ✅ Matrix of found words by length and starting letter
 - Added support for archived/previous puzzles
 
+### In Use 
+
 ![Chrome Extension UI](static/ui.png)
