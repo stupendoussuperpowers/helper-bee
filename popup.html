@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Helper Bee</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url("Frame 1.svg");
+      background-size: 400px auto;
+      font-size: 14px;
+      min-width: 300px;
+      padding: 1em;
+    }
+    #prefixes {
+      margin-top: 10px;
+    }
+    .complete {
+      color: green;
+      font-weight: bold;
+    }
+    .incomplete {
+      color: #555;
+    }
+    
+    h2 {
+	margin-bottom: 2px;
+	margin-top: 5px;
+    }
+
+    #status {
+	margin-bottom: 40px;
+    }
+
+    .linktoplay {
+	  display: inline-block;
+      	  padding: 8px 12px;
+	  background-color: #ffd700;
+	  color: #000;
+	  text-decoration: none;
+	  border-radius: 8px;
+	  font-weight: bold;
+	  margin-bottom: 8px;
+	  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+	  font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h2>Helper Bee</h2>
+  <div id="status">Loading…</div>
+  <div id="prefixes"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

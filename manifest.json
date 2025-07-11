@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Helper Bee",
+  "version": "1.0",
+  "description": "Track your NYT Spelling Bee progress using daily hints.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.nytimes.com/*"
+  ],
+  "action": {
+	"default_popup": "popup.html", 
+	"default_icon": {
+		"16": "Group 1.png"
+	}
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.nytimes.com/puzzles/spelling-bee"],
+      "js": ["content-game.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.nytimes.com/*/crosswords/spelling-bee-forum.html"],
+      "js": ["content-hint.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
+
