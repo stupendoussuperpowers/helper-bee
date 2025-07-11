@@ -5,7 +5,7 @@
   <style>
     body {
       font-family: sans-serif;
-      background-image: url("Frame 1.svg");
+      background-image: url("static/Frame 1.svg");
       background-size: 400px auto;
       font-size: 14px;
       min-width: 300px;
@@ -23,12 +23,14 @@
     }
     
     h2 {
-	margin-bottom: 2px;
-	margin-top: 5px;
+
     }
 
     #status {
 	margin-bottom: 40px;
+	    font-weight: 10;
+	    font-family: sans-serif;
+	    font-size: 20px;
     }
 
     .linktoplay {
@@ -43,11 +45,42 @@
 	  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 	  font-family: sans-serif;
     }
+
+    .done {
+	color: green;
+	font-weight: bold;
+	    font-family: monospace;
+    }
+
+    .count {
+	font-family: monospace;
+    }
+
+    .title {
+	    font-size: 28px;
+	font-family: Georgia;
+	    font-weight: 900;
+	margin-bottom: 20px;
+	margin-top: 5px;
+    }
+
+    h3 {
+	font-family: sans-serif;
+	    font-size: 18px;
+    }
+
+    #totalwords {
+	font-family: sans-serif;
+	    font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h2>Helper Bee</h2>
-  <div id="status">Loading…</div>
+  <div class="title">
+	Helper Bee  
+	<span id="status">Loading…</span>
+  </div>
+
   <div id="prefixes"></div>
   <script src="popup.js"></script>
 </body>

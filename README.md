@@ -2,8 +2,6 @@
 
 An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hints provided by the game. 
 
-![Chrome Extension UI](ui.png)
-
 ### How to use
 - Install and open the extension.
 - Visit the daily hints page:
@@ -15,3 +13,5 @@ An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hi
    - ✅ Two-letter prefix clue tracking
    - ✅ Matrix of found words by length and starting letter
 - Added support for archived/previous puzzles
+
+![Chrome Extension UI](static/ui.png)

@@ -23,8 +23,8 @@ function renderPrefixProgress(hints, enteredWords, container) {
 	// Group prefixes by their first letter
 	const groups = {};
 	for (const prefix in hints.prefixes) {
-		const count = hints.prefixes[prefix];
-		const matched = enteredWords.filter(w => w.startsWith(prefix)).length;
+		const count = String(hints.prefixes[prefix]).padEnd(2, ' ');
+		const matched = String(enteredWords.filter(w => w.startsWith(prefix)).length).padStart(2, ' ');
 
 		const firstLetter = prefix[0];
 		if (!groups[firstLetter]) groups[firstLetter] = [];
@@ -35,10 +35,9 @@ function renderPrefixProgress(hints, enteredWords, container) {
 	// Render each group as a line
 	for (const firstLetter of Object.keys(groups).sort()) {
 		const lineDiv = document.createElement("div");
-		lineDiv.style.fontFamily = "monospace";  // for nice fixed-width alignment
 
 		const lineText = groups[firstLetter]
-			.map(({ prefix, matched, count }) => `${prefix}-<span style="color:${matched == count ? 'green' : 'black'};">${matched}/${count}</span>`)
+			.map(({ prefix, matched, count }) => `<span style="font-weight: 500;">${prefix}</span> <span class= ${matched.trim() == count.trim() ? 'done count' : 'count'}> ${matched}/${count}</span>`)
 			.join("  "); // two spaces for separation
 
 		lineDiv.innerHTML = lineText;
@@ -47,13 +46,17 @@ function renderPrefixProgress(hints, enteredWords, container) {
 }
 
 //function renderProgress(hints, enteredWords) {
-function callback(hints, enteredWords) {
+function callback(hints, enteredWords, puzzDate) {
 	console.log({ enteredWords });
 	const container = document.getElementById("prefixes");
 	const status = document.getElementById("status");
 
 	container.innerHTML = "";
+
 	status.innerHTML = "";
+	if (puzzDate) {
+		status.innerHTML = `${new Date(puzzDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`;
+	}
 
 	if (!enteredWords) {
 		console.log("Early return?");
@@ -82,25 +85,24 @@ function callback(hints, enteredWords) {
 	console.log({ totalWords, enteredCount });
 
 	// Display progress at the top
-	const progressDiv = document.createElement("h3");
+	const progressDiv = document.createElement("div");
 	progressDiv.style.marginBottom = "8px";
 	progressDiv.style.marginTop = "8px";
-	progressDiv.innerHTML = `<b>Total Words:</b> ${enteredCount} / ${totalWords}`;
+	progressDiv.style.fontSize = "18px";
+	progressDiv.innerHTML = `<b id='totalwords'> Total Words:</b> ${enteredCount} / ${totalWords}`;
 	container.appendChild(progressDiv);
+
+	container.appendChild(document.createElement("hr"));
 
 	renderPrefixProgress(hints, enteredWords, container);
 
-
-	status.textContent = hints.timestamp
-		? `Hint data from ${new Date(hints.timestamp).toLocaleString()}`
-		: `Hint data found`;
-
+	container.appendChild(document.createElement("hr"));
 
 	console.log(hints.matrix, hints.matrixLength);
 	if (hints.matrix && hints.matrixLength) {
 
 		const matrixSection = document.createElement("div");
-		matrixSection.innerHTML = "<h3>Matrix Progress</h3>";
+		matrixSection.innerHTML = "<h3>Spelling Bee Grid</h3>";
 
 		// Create table
 		const table = document.createElement("table");
@@ -121,6 +123,7 @@ function callback(hints, enteredWords) {
 			th.style.border = "1px solid #ccc";
 			th.style.padding = "4px 8px";
 			th.style.textAlign = "center";
+			th.style.fontFamily = "monospace";  // for nice fixed-width alignment
 			headerRow.appendChild(th);
 		}
 		thead.appendChild(headerRow);
@@ -139,6 +142,7 @@ function callback(hints, enteredWords) {
 			letterTd.style.border = "1px solid #ccc";
 			letterTd.style.padding = "4px 8px";
 			letterTd.style.textAlign = "center";
+			letterTd.style.fontFamily = "monospace";
 			tr.appendChild(letterTd);
 
 			// Count cells
@@ -156,13 +160,11 @@ function callback(hints, enteredWords) {
 				const found = foundCounts[i];
 				const expected = expectedCounts[i];
 
-				// Display "found / expected" or empty if expected is 0
-				td.textContent = expected > 0 ? `${found} / ${expected}` : "";
+				td.textContent = expected > 0 ? `${found}/${expected}` : "";
 				td.style.border = "1px solid #ccc";
-				// td.style.padding = "4px 8px";
 				td.style.textAlign = "center";
+				td.style.fontFamily = "monospace";
 
-				// Color the cell green if complete, else gray text
 				if (expected > 0) {
 					td.style.color = found >= expected ? "green" : "#555";
 					td.style.fontWeight = found >= expected ? "bold" : "normal";
@@ -216,7 +218,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 			linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
 
-			linkToHints.innerText = "Get the official hints!"
+			linkToHints.innerText = "Get Official Hints!"
 
 			linkToHints.target = "_blank";
 
@@ -237,9 +239,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 		}, results => {
 			console.log({ results });
 			if (chrome.runtime.lastError || !results || !results[0]) {
-				callback(sb_hints[puzzDate], []);
+
+				callback(sb_hints[puzzDate], [], null);
 			} else {
-				callback(sb_hints[puzzDate], results[0].result);
+				callback(sb_hints[puzzDate], results[0].result, puzzDate);
 			}
 		});
 

@@ -14,15 +14,10 @@
   "action": {
 	"default_popup": "popup.html", 
 	"default_icon": {
-		"16": "Group 1.png"
+		"16": "static/Group 1.png"
 	}
   },
   "content_scripts": [
-    {
-      "matches": ["https://www.nytimes.com/puzzles/spelling-bee"],
-      "js": ["content-game.js"],
-      "run_at": "document_idle"
-    },
     {
       "matches": ["https://www.nytimes.com/*/crosswords/spelling-bee-forum.html"],
       "js": ["content-hint.js"],
