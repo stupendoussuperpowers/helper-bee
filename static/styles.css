@@ -1,0 +1,109 @@
+body {
+  font-family: sans-serif;
+  background-image: url("Frame 1.svg");
+  background-size: 400px auto;
+  font-size: 14px;
+  min-width: 300px;
+  padding: 1em;
+}
+
+#prefixes {
+  margin-top: 10px;
+}
+
+.complete {
+  color: green;
+  font-weight: bold;
+}
+
+.incomplete {
+  color: #555;
+}
+
+.prefix {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.totalwords-container {
+  margin-bottom: "8px";
+  margin-top: "8px";
+  font-size: "18px";
+}
+
+table {
+  width: "100%";
+	border-collapse: collapse; 
+}
+
+th {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  text-align: center;
+  font-family: monospace;
+}
+
+td {
+  font-weight: "bold";
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  text-align: center;
+  font-family: monospace;
+}
+
+.mcount {
+  border: 1px solid #ccc;
+  text-align: center;
+  font-family: monospace;
+  color: #555;
+  font-weight: normal;
+}
+
+#status {
+  margin-bottom: 40px;
+  font-weight: 10;
+  font-family: sans-serif;
+  font-size: 20px;
+}
+
+.linktoplay {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #ffd700;
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+}
+
+.done {
+  color: green;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.count {
+  font-family: monospace;
+}
+
+.title {
+  font-size: 28px;
+  font-family: "Bree Serif", serif;
+  font-weight: 900;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  font-stretch: ultra-condensed;
+}
+
+h3 {
+  font-family: "Signika", sans-serif;
+  font-size: 18px;
+}
+
+#totalwords {
+  font-family: "Signika", sans-serif;
+  font-weight: bold;
+}

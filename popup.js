@@ -30,12 +30,26 @@ function renderPrefixProgress(hints, enteredWords, container) {
 		const lineDiv = document.createElement("div");
 
 		const lineText = groups[firstLetter]
-			.map(({ prefix, matched, count }) => `<span style="font-family: monospace; font-weight: bold;">${prefix + ' '}</span> <span class= ${matched.trim() == count.trim() ? 'done count' : 'count'}> ${matched}/${count}</span>`)
-			.join("  "); // two spaces for separation
+			.map(({ prefix, matched, count }) => `<span class="prefix">${prefix + ' '}</span><span class=${matched.trim() == count.trim() ? 'done count' : 'count'}>${matched}/${count}</span>`).join("");
 
 		lineDiv.innerHTML = lineText;
 		container.appendChild(lineDiv);
 	}
+}
+
+function createLink(href, text, subtitle) {
+	const linkToPlay = document.createElement("a");
+	linkToPlay.className = "linktoplay";
+	linkToPlay.href = href;
+	linkToPlay.innerText = text;
+	linkToPlay.target = "_blank";
+
+	const subText = document.createElement("div");
+	subText.innerHTML = subtitle;
+	subText.marginLeft = "2px";
+	subText.fontWeight = "bold";
+
+	return [linkToPlay, subText];
 }
 
 //function renderProgress(hints, enteredWords) {
@@ -52,18 +66,11 @@ function callback(hints, enteredWords, puzzDate) {
 	}
 
 	if (!enteredWords) {
-		console.log("Early return?");
-
-		const linkToPlay = document.createElement("a");
-		linkToPlay.className = "linktoplay";
-		linkToPlay.href = "https://nytimes.com/puzzles/spelling-bee/";
-		linkToPlay.innerText = "Play today's NYT Spelling Bee!"
-		linkToPlay.target = "_blank";
-
-		const subText = document.createElement("div");
-		subText.innerHTML = "And come back here to track your progress.";
-		subText.marginLeft = "2px";
-		subText.fontWeight = "bold";
+		const [linkToPlay, subText] = createLink(
+			"https://nytimes.com/puzzles/spelling-bee/",
+			"Play today's NYT Spelling Bee!",
+			"And come back here to track your progress."
+		);
 
 		container.appendChild(linkToPlay);
 		container.appendChild(subText);
@@ -79,9 +86,8 @@ function callback(hints, enteredWords, puzzDate) {
 
 	// Display progress at the top
 	const progressDiv = document.createElement("div");
-	progressDiv.style.marginBottom = "8px";
-	progressDiv.style.marginTop = "8px";
-	progressDiv.style.fontSize = "18px";
+	progressDiv.className = "totalwords-container";
+
 	progressDiv.innerHTML = `<b id='totalwords'> Total Words:</b> ${enteredCount} / ${totalWords}`;
 	container.appendChild(progressDiv);
 
@@ -99,9 +105,6 @@ function callback(hints, enteredWords, puzzDate) {
 
 		// Create table
 		const table = document.createElement("table");
-		table.style.borderCollapse = "collapse";
-		table.style.width = "100%";
-
 		// Table header row
 		const thead = document.createElement("thead");
 		const headerRow = document.createElement("tr");
@@ -113,10 +116,6 @@ function callback(hints, enteredWords, puzzDate) {
 		for (const len of hints.matrixLength) {
 			const th = document.createElement("th");
 			th.textContent = len;
-			th.style.border = "1px solid #ccc";
-			th.style.padding = "4px 8px";
-			th.style.textAlign = "center";
-			th.style.fontFamily = "monospace";  // for nice fixed-width alignment
 			headerRow.appendChild(th);
 		}
 		thead.appendChild(headerRow);
@@ -132,10 +131,6 @@ function callback(hints, enteredWords, puzzDate) {
 			const letterTd = document.createElement("td");
 			letterTd.textContent = letter;
 			letterTd.style.fontWeight = "bold";
-			letterTd.style.border = "1px solid #ccc";
-			letterTd.style.padding = "4px 8px";
-			letterTd.style.textAlign = "center";
-			letterTd.style.fontFamily = "monospace";
 			tr.appendChild(letterTd);
 
 			// Count cells
@@ -154,15 +149,8 @@ function callback(hints, enteredWords, puzzDate) {
 				const expected = expectedCounts[i];
 
 				td.textContent = expected > 0 ? `${found}/${expected}` : "";
-				td.style.border = "1px solid #ccc";
-				td.style.textAlign = "center";
-				td.style.fontFamily = "monospace";
 
-				if (expected > 0) {
-					td.style.color = found >= expected ? "green" : "#555";
-					td.style.fontWeight = found >= expected ? "bold" : "normal";
-				}
-
+				td.className = expected > 0 && found >= expected ? "done mcount" : "mcount";
 				tr.appendChild(td);
 			}
 
@@ -204,19 +192,21 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 	if (!sb_hints || !sb_hints[puzzDate]) {
 		const status = document.getElementById("status");
+		status.innerHTML = "";
 		const container = document.getElementById("prefixes");
 
 		container.innerHTML = "";
 
 		const linkToHints = document.createElement("a");
 
-		linkToHints.className = "linktoplay";
-		linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
-		linkToHints.innerText = "Get Official Hints!"
-		linkToHints.target = "_blank";
-		status.innerHTML = "";
+		const [linkToPlay, subText] = createLink(
+			`https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`,
+			"Get Official Hints!",
+			"And come back here to track your progress."
+		);
 
-		container.appendChild(linkToHints);
+		container.appendChild(linkToPlay);
+		container.appendChild(subText);
 
 		return;
 	}
