@@ -37,6 +37,15 @@ function renderPrefixProgress(hints, enteredWords, container) {
 	}
 }
 
+function createColored(matched, count) {
+	matched = String(matched);
+	count = String(count);
+
+	return `<span class=${matched.trim() == count.trim() ? 'done count' : 'count'}>
+		${matched}/${count}
+	</span>`;
+}
+
 function createLink(href, text, subtitle) {
 	const linkToPlay = document.createElement("a");
 	linkToPlay.className = "linktoplay";
@@ -52,8 +61,56 @@ function createLink(href, text, subtitle) {
 	return [linkToPlay, subText];
 }
 
+function countMatchingWords(words, letters) {
+	const letterSet = new Set(letters);
+
+	let atLeastOnce = 0;
+	let exactlyOnce = 0;
+
+	for (const word of words.map(x => x.toLowerCase())) {
+		const wordCounts = {};
+		for (const ch of word) {
+			wordCounts[ch] = (wordCounts[ch] || 0) + 1;
+		}
+
+		const hasAll = letters.every(l => wordCounts[l] >= 1);
+		const hasExactlyOnce = letters.every(l => wordCounts[l] === 1);
+
+		if (hasAll) atLeastOnce++;
+		if (hasExactlyOnce) exactlyOnce++;
+	}
+
+	console.log(atLeastOnce, exactlyOnce);
+
+	return {
+		atLeastOnce,
+		exactlyOnce
+	};
+}
+
+function getAProgressBar(entered, total) {
+	const progBar = document.createElement("div");
+	progBar.class = 'sb-progress-bar';
+	progBar.style = "height: 28px;";
+
+	progBar.innerHTML = `
+	<div class="sb-progress-line"></div>
+	<div class="sb-progress-completed" style="width: ${entered / total * 100}%;"></div>
+
+	<div class="sb-progress-marker" style="left: 95%;">
+		<span class="sb-progress-value" style="background-color: #d5d5d5" >${total}</span>
+	</div>
+
+	<div class="sb-progress-marker" style="left: ${entered / total * 100}%; top: -48px;">
+		<span class="sb-progress-value" >${entered}</span>
+	</div>
+	`;
+
+	return progBar;
+}
+
 //function renderProgress(hints, enteredWords) {
-function callback(hints, enteredWords, puzzDate) {
+function callback(hints, enteredWords, puzzDate, playLetters) {
 	console.log({ enteredWords });
 	const container = document.getElementById("prefixes");
 	const status = document.getElementById("status");
@@ -84,12 +141,16 @@ function callback(hints, enteredWords, puzzDate) {
 
 	console.log({ totalWords, enteredCount });
 
-	// Display progress at the top
-	const progressDiv = document.createElement("div");
-	progressDiv.className = "totalwords-container";
+	const barProgress = getAProgressBar(enteredCount, totalWords);
+	container.appendChild(barProgress);
 
-	progressDiv.innerHTML = `<b id='totalwords'> Total Words:</b> ${enteredCount} / ${totalWords}`;
-	container.appendChild(progressDiv);
+	const { atLeastOnce, exactlyOnce } = countMatchingWords(enteredWords, playLetters);
+
+	const pangramDiv = document.createElement("div");
+	pangramDiv.className = "totalwords-container";
+
+	pangramDiv.innerHTML = `<b id='totalwords'> Pangrams:</b>` + createColored(atLeastOnce, hints.pangrams) + `<b id='totalwords'> Perfect:</b>` + createColored(exactlyOnce, hints.perfect);
+	container.appendChild(pangramDiv);
 
 	container.appendChild(document.createElement("hr"));
 
@@ -197,8 +258,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 		container.innerHTML = "";
 
-		const linkToHints = document.createElement("a");
-
 		const [linkToPlay, subText] = createLink(
 			`https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`,
 			"Get Official Hints!",
@@ -211,6 +270,12 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 		return;
 	}
 
+	const playLetters = await executeScript(tab.id, () => {
+		return Array.from(document.querySelectorAll("text.cell-letter"))
+			.map(el => el.textContent.trim().toLowerCase())
+			.filter(Boolean);
+	});
+
 	const enteredWords = await executeScript(tab.id, () => {
 		return Array.from(document.querySelectorAll("ul.sb-wordlist-items-pag li"))
 			.map(el => el.textContent.trim().toLowerCase())
@@ -219,9 +284,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 
 	console.log({ enteredWords });
 	if (chrome.runtime.lastError || !enteredWords) {
-		callback(sb_hints[puzzDate], [], null);
+		callback(sb_hints[puzzDate], [], null, null);
 	} else {
-		callback(sb_hints[puzzDate], enteredWords, puzzDate);
+		callback(sb_hints[puzzDate], enteredWords, puzzDate, playLetters);
 	}
 });
 

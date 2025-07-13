@@ -61,10 +61,24 @@ function getDateFromHintsURL(url) {
 	return `${year}/${month}/${day}`;
 }
 
+function getPangramsPerfects() {
+	const bodyText = document.body.innerText;
+	const pangramsMatch = bodyText.match(/PANGRAMS:\s*(\d+)/);
+	const perfectMatch = bodyText.match(/\((\d+)\s*Perfect\)/);
+
+	const pangrams = pangramsMatch ? parseInt(pangramsMatch[1], 10) : 0;
+	const perfect = perfectMatch ? parseInt(perfectMatch[1], 10) : 0;
+
+	return { pangrams, perfect };
+}
+
 function saveHintData() {
 	console.log("[start] hint parsing...");
+
 	const prefixes = parsePrefixClues();
 	const matrixResults = parseMatrix();
+	const { pangrams, perfect } = getPangramsPerfects();
+
 	console.log({ matrixResults });
 	const timestamp = new Date().toISOString();
 
@@ -76,6 +90,8 @@ function saveHintData() {
 			prefixes,
 			matrix: matrixResults.matrix,
 			matrixLength: matrixResults.wordLengths,
+			pangrams,
+			perfect,
 			timestamp
 		};
 

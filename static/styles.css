@@ -7,6 +7,70 @@ body {
   padding: 1em;
 }
 
+.sb-progress-bar {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 40px;
+  font-family: sans-serif;
+  margin: 20px 0;
+}
+
+.sb-progress-line {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background-color: #d5d5d5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sb-progress-completed {
+  position: relative;
+	top:-8px;
+  width: 62.5%;
+  height: 8px;
+  background-color: goldenrod;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sb-progress-marker {
+	position: relative;
+	top: -24px;
+  z-index: 1;
+}
+
+.sb-progress-value {
+  background-color: gold;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px white;
+}
+
+.sb-progress-total {
+  position: relative; 
+  top: -24px;
+  font-size: 14px;
+  color: black;
+  background-color: #d5d5d5;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px white;
+}
+
 #prefixes {
   margin-top: 10px;
 }
@@ -83,10 +147,12 @@ td {
   color: green;
   font-weight: bold;
   font-family: monospace;
+margin-right: 5px;
 }
 
 .count {
   font-family: monospace;
+	margin-right: 5px;
 }
 
 .title {

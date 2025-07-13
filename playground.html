@@ -1,0 +1,89 @@
+<html>
+<style>
+.sb-progress-bar {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 40px;
+  font-family: sans-serif;
+  margin: 20px 0;
+}
+
+.sb-progress-line {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background-color: black;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sb-progress-completed {
+  position: relative;
+	top:-8px;
+  width: 62.5%;
+  height: 8px;
+  background-color: goldenrod;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sb-progress-dots {
+  display: none; /* Hidden as requested */
+}
+
+.sb-progress-marker {
+  position: absolute;
+  top: -10px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.sb-progress-value {
+  background-color: gold;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px white;
+}
+
+.sb-progress-total {
+  position: absolute;
+  top: -10px;
+  right: 0;
+
+  font-size: 14px;
+  color: black;
+    background-color: #d5d5d5;
+  font-weight: bold;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px white;
+}
+
+</style>
+
+<div class="sb-progress-bar">
+
+  <div class="sb-progress-line"></div>
+  
+  <div class="sb-progress-completed"></div>
+  
+  <div class="sb-progress-marker" style="left: 62.5%;">
+        <span class="sb-progress-value">89</span>
+  </div>
+  
+  <div class="sb-progress-total">100</div>
+
+</div>
+</html>
