@@ -16,4 +16,4 @@ An NYT Spelling Bee progress tracking Chrome Extension. Based on the official hi
 
 ### In Use 
 
-![Chrome Extension UI](static/ui.png)
+![Chrome Extension UI](static/uiv2.png)
