@@ -2,27 +2,81 @@
 <html>
   <head>
     <title>Helper Bee</title>
-  </head>
-  <body>
-    <div class="title">
-      Helper Bee
-      <span id="status">Loading…</span>
-    </div>
-
-    <div id="prefixes"></div>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Signika:wght@300..700&display=swap"
       rel="stylesheet"
     />
     <link href="static/styles.css" rel="stylesheet" />
-    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div class="title">
+      Helper Bee
+      <span id="status"></span>
+    </div>
+
+    <div>
+      <div id="play-bee">
+        <a
+          class="linktoplay"
+          href="https://nytimes.com/puzzles/spelling-bee/"
+          target="_blank"
+          >Play today's NYT Spelling Bee!</a
+        >
+      </div>
+      <div id="get-hints">
+        <a id="get-hints-link" class="linktoplay" href="#" target="_blank"
+          >Get Official Hints!</a
+        >
+        <div>And come back here to track your progress.</div>
+      </div>
+
+      <div id="all-the-hints">
+        <div id="progress-bar" style="height: 28px">
+          <div class="sb-progress-line"></div>
+          <div
+            class="sb-progress-completed"
+            id="sb-progress-completed"
+            style=""
+          ></div>
+
+          <div class="sb-progress-marker" style="left: 95%">
+            <span
+              class="sb-progress-value"
+              id="sb-progress-total"
+              style="z-index: 2; background-color: #d5d5d5"
+            ></span>
+          </div>
+
+          <div
+            class="sb-progress-marker"
+            id="sb-progress-marker"
+            style="z-index: 3; top: -48px"
+          >
+            <span class="sb-progress-value" id="sb-progress-value"></span>
+          </div>
+        </div>
+        <div class="totalwords-container">
+          <b id="totalwords"> Pangrams:</b
+          ><span id="pangram" class="done" count=""> </span
+          ><b id="totalwords"> Perfect:</b
+          ><span id="perfect" class="done" count=""> </span>
+        </div>
+        <hr />
+        <div><h3>Two Letter List</h3></div>
+        <div id="two-letter-list"></div>
+        <hr />
+        <div>
+          <h3>Spelling Bee Grid</h3>
+          <table id="spelling-bee-grid"></table>
+        </div>
+      </div>
+    </div>
   </body>
+  <script src="popup.js"></script>
 </html>

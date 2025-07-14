@@ -7,6 +7,10 @@ body {
   padding: 1em;
 }
 
+#get-hints, #all-the-hints, #play-bee {
+display: none;
+}
+
 .sb-progress-bar {
   position: relative;
   width: 100%;

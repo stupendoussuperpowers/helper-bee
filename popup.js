@@ -7,12 +7,7 @@ function parseFormattedDate(dateStr) {
 	return `${yyyy}/${mm}/${dd}`;
 }
 
-function renderPrefixProgress(hints, enteredWords, container) {
-	const twoLetter = document.createElement("div");
-	twoLetter.innerHTML = "<h3>Two Letter List</h3>";
-
-	container.appendChild(twoLetter);
-
+function renderPrefixProgress(hints, enteredWords) {
 	// Group prefixes by their first letter
 	const groups = {};
 	for (const prefix in hints.prefixes) {
@@ -26,14 +21,13 @@ function renderPrefixProgress(hints, enteredWords, container) {
 
 	console.log({ groups });
 	// Render each group as a line
+	const lineDiv = document.getElementById("two-letter-list");
 	for (const firstLetter of Object.keys(groups).sort()) {
-		const lineDiv = document.createElement("div");
 
 		const lineText = groups[firstLetter]
 			.map(({ prefix, matched, count }) => `<span class="prefix">${prefix + ' '}</span><span class=${matched.trim() == count.trim() ? 'done count' : 'count'}>${matched}/${count}</span>`).join("");
 
-		lineDiv.innerHTML = lineText;
-		container.appendChild(lineDiv);
+		lineDiv.innerHTML += `<div>` + lineText + `</div>`;
 	}
 }
 
@@ -89,6 +83,7 @@ function countMatchingWords(words, letters) {
 }
 
 function getAProgressBar(entered, total) {
+	/*
 	const progBar = document.createElement("div");
 	progBar.class = 'sb-progress-bar';
 	progBar.style = "height: 28px;";
@@ -98,39 +93,44 @@ function getAProgressBar(entered, total) {
 	<div class="sb-progress-completed" style="width: ${entered / total * 100}%;"></div>
 
 	<div class="sb-progress-marker" style="left: 95%;">
-		<span class="sb-progress-value" style="background-color: #d5d5d5" >${total}</span>
+		<span class="sb-progress-value" style="z-index: 2; background-color: #d5d5d5" >${total}</span>
 	</div>
 
-	<div class="sb-progress-marker" style="left: ${entered / total * 100}%; top: -48px;">
+	<div class="sb-progress-marker" style="z-index:3; left: ${entered / total * 100}%; top: -48px;">
 		<span class="sb-progress-value" >${entered}</span>
 	</div>
 	`;
 
-	return progBar;
+	*/
+
+	const progressComp = document.getElementById("sb-progress-completed");
+	progressComp.style.width = `${entered / total * 100}%`;
+
+	const progressMarker = document.getElementById("sb-progress-marker");
+	progressMarker.style.left = `${entered / total * 100}%`;
+
+	const progressValue = document.getElementById("sb-progress-value");
+	progressValue.innerText = `${entered}`;
+
+	const progressTotal = document.getElementById("sb-progress-total");
+	progressTotal.innerText = `${total}`;
+
+	return;
 }
 
 //function renderProgress(hints, enteredWords) {
 function callback(hints, enteredWords, puzzDate, playLetters) {
-	console.log({ enteredWords });
-	const container = document.getElementById("prefixes");
 	const status = document.getElementById("status");
-
-	container.innerHTML = "";
-
 	status.innerHTML = "";
+
 	if (puzzDate) {
 		status.innerHTML = `${new Date(puzzDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`;
 	}
 
 	if (!enteredWords) {
-		const [linkToPlay, subText] = createLink(
-			"https://nytimes.com/puzzles/spelling-bee/",
-			"Play today's NYT Spelling Bee!",
-			"And come back here to track your progress."
-		);
+		const linkToPlay = document.getElementById("play-bee");
+		linkToPlay.style.display = "block";
 
-		container.appendChild(linkToPlay);
-		container.appendChild(subText);
 		return;
 	}
 
@@ -141,31 +141,25 @@ function callback(hints, enteredWords, puzzDate, playLetters) {
 
 	console.log({ totalWords, enteredCount });
 
+	// const progressBarContainer = document.getElementById("progress-bar");
 	const barProgress = getAProgressBar(enteredCount, totalWords);
-	container.appendChild(barProgress);
+	// progressBarContainer.appendChild(barProgress);
+
 
 	const { atLeastOnce, exactlyOnce } = countMatchingWords(enteredWords, playLetters);
 
-	const pangramDiv = document.createElement("div");
-	pangramDiv.className = "totalwords-container";
+	const pangramDiv = document.getElementById("pangram");
+	pangramDiv.innerHTML = createColored(atLeastOnce, hints.pangrams);
 
-	pangramDiv.innerHTML = `<b id='totalwords'> Pangrams:</b>` + createColored(atLeastOnce, hints.pangrams) + `<b id='totalwords'> Perfect:</b>` + createColored(exactlyOnce, hints.perfect);
-	container.appendChild(pangramDiv);
+	const perfectDiv = document.getElementById("perfect");
+	perfectDiv.innerHTML = createColored(exactlyOnce, hints.perfect);
 
-	container.appendChild(document.createElement("hr"));
+	renderPrefixProgress(hints, enteredWords);
 
-	renderPrefixProgress(hints, enteredWords, container);
-
-	container.appendChild(document.createElement("hr"));
 
 	console.log(hints.matrix, hints.matrixLength);
 	if (hints.matrix && hints.matrixLength) {
-
-		const matrixSection = document.createElement("div");
-		matrixSection.innerHTML = "<h3>Spelling Bee Grid</h3>";
-
-		// Create table
-		const table = document.createElement("table");
+		const table = document.getElementById("spelling-bee-grid");
 		// Table header row
 		const thead = document.createElement("thead");
 		const headerRow = document.createElement("tr");
@@ -219,9 +213,10 @@ function callback(hints, enteredWords, puzzDate, playLetters) {
 
 		}
 		table.appendChild(tbody);
-		matrixSection.appendChild(table);
-		container.appendChild(matrixSection);
 	}
+
+	const allTheHints = document.getElementById("all-the-hints");
+	allTheHints.style.display = "block";
 }
 
 function executeScript(tabId, func) {
@@ -252,20 +247,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
 	const { sb_hints } = await getStorage("sb_hints");
 
 	if (!sb_hints || !sb_hints[puzzDate]) {
-		const status = document.getElementById("status");
-		status.innerHTML = "";
-		const container = document.getElementById("prefixes");
+		const linkToHints = document.getElementById("get-hints-link");
+		linkToHints.href = `https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`;
 
-		container.innerHTML = "";
-
-		const [linkToPlay, subText] = createLink(
-			`https://www.nytimes.com/${puzzDate}/crosswords/spelling-bee-forum.html`,
-			"Get Official Hints!",
-			"And come back here to track your progress."
-		);
-
-		container.appendChild(linkToPlay);
-		container.appendChild(subText);
+		const getHint = document.getElementById("get-hints");
+		getHint.style.display = "block";
 
 		return;
 	}

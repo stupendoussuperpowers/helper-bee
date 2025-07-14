@@ -20,8 +20,8 @@
 
 .sb-progress-completed {
   position: relative;
-	top:-8px;
-  width: 62.5%;
+  top:-8px;
+  width: "${entered / total * 100}%";
   height: 8px;
   background-color: goldenrod;
   border-radius: 4px;
@@ -72,18 +72,15 @@
 }
 
 </style>
+	<div class="sb-progress-line"></div>
+	<div class="sb-progress-completed" ></div>
 
-<div class="sb-progress-bar">
+	<div class="sb-progress-marker" style="left: 95%;">
+		<span class="sb-progress-value" style="z-index: 2; background-color: #d5d5d5" >${total}</span>
+	</div>
 
-  <div class="sb-progress-line"></div>
-  
-  <div class="sb-progress-completed"></div>
-  
-  <div class="sb-progress-marker" style="left: 62.5%;">
-        <span class="sb-progress-value">89</span>
-  </div>
-  
-  <div class="sb-progress-total">100</div>
+	<div class="sb-progress-marker" style="z-index:3; left: ${entered / total * 100}%; top: -48px;">
+		<span class="sb-progress-value" >${entered}</span>
+	</div>
 
-</div>
 </html>
